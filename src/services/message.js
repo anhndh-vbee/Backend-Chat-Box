@@ -9,7 +9,10 @@ const sendMessageService = async (data) => {
     question: data.question,
     answer,
   });
-  return newMsg;
+  return {
+    answer,
+    _id: newMsg._id,
+  };
 };
 
 const getListMessage = async (userId) => {
@@ -21,7 +24,29 @@ const getListMessage = async (userId) => {
   }
 
   const listMsg = await messageDaos.getMessageByUser(userId);
-  return listMsg;
+  const result = listMsg.flatMap((msg) => [
+    {
+      clientMessageId: msg._id,
+      message: {
+        text: msg.question,
+      },
+      fromMe: true,
+      time: new Date(msg.createdAt).toLocaleTimeString(),
+    },
+    {
+      id: msg._id,
+      message: {
+        text: msg.answer,
+      },
+      fromMe: false,
+      time: new Date(msg.createdAt).toLocaleTimeString(),
+      showAction: true,
+      showAvatar: true,
+      rated: msg.rated,
+    },
+  ]);
+
+  return result;
 };
 
 const deleteMessage = async (id) => {

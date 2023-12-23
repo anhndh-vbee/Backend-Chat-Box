@@ -7,7 +7,7 @@ const rateValidate = (data) => {
     cohension: Joi.number().valid(1, 2, 3, 4, 5).required(),
     precise: Joi.number().valid(1, 2, 3, 4, 5).required(),
     nonRedundancy: Joi.number().valid(1, 2, 3, 4, 5).required(),
-    comment: Joi.string(),
+    comment: Joi.string().optional(),
   });
 
   return rateSchema.validate(data);

@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema(
     },
     question: String,
     answer: String,
+    rated: Boolean,
   },
   {
     timestamps: true,
