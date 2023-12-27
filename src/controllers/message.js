@@ -12,7 +12,7 @@ const sendMessage = async (req, res) => {
     const result = await messageService.sendMessageService(req.body);
     return res.json(result);
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).json(error.message);
   }
 };
 
