@@ -28,4 +28,27 @@ const addUserService = async (data) => {
   };
 };
 
-module.exports = { addUserService };
+const bulkAddUserService = async (data) => {
+  const userList = await Promise.all(
+    data.map(async (user) => {
+      const password = generateRandomString(8);
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+      const username = extractName(user["Email"]);
+      const role = configs.ROLE.TEACHER;
+
+      return {
+        username,
+        rawPass: password,
+        password: hashPassword,
+        role,
+        email: user["Email"],
+      };
+    })
+  );
+
+  const result = await userDaos.bulkInsertUser(userList);
+  return result;
+};
+
+module.exports = { addUserService, bulkAddUserService };
