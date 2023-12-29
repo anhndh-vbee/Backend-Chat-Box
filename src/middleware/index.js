@@ -7,9 +7,11 @@ const checkToken = (req, res, next) => {
     const accessToken = token.split(" ")[1];
     jwt.verify(accessToken, configs.JWT_ACCESS_KEY, (err, user) => {
       if (err) {
+        console.log(err);
         return res.status(403).json("Token is invalid");
       }
-      req.user = user;
+      console.log(user);
+      req.user = user.data;
       next();
     });
   } else {

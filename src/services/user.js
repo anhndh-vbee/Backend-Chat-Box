@@ -18,10 +18,10 @@ const loginService = async (data) => {
   if (user) {
     const checkPassword = await bcrypt.compare(password, user?.password);
     if (checkPassword) {
-      const { password, rawPass, ...otherFields } = user._doc;
-      const accessToken = generateAccessToken(otherFields);
-      const refreshToken = await generateRefreshToken(otherFields);
-      return { ...otherFields, refreshToken, accessToken };
+      const userId = user?._id;
+      const accessToken = generateAccessToken(userId);
+      const refreshToken = await generateRefreshToken(userId);
+      return { refreshToken, accessToken };
     }
     return {
       errMsg: "Wrong password",

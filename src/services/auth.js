@@ -3,31 +3,21 @@ const configs = require("../configs/index");
 const tokenDaos = require("../daos/token");
 const hashData = require("../utils/hash");
 
-const generateAccessToken = (user) => {
-  return jwt.sign(
-    {
-      data: user,
-    },
-    configs.JWT_ACCESS_KEY,
-    { expiresIn: "3h" }
-  );
+const generateAccessToken = (userId) => {
+  return jwt.sign({ userId }, configs.JWT_ACCESS_KEY, { expiresIn: "3h" });
 };
 
-const generateRefreshToken = async (user) => {
-  const refreshToken = jwt.sign(
-    {
-      data: user,
-    },
-    configs.JWT_REFRESH_KEY,
-    { expiresIn: "365d" }
-  );
+const generateRefreshToken = async (userId) => {
+  const refreshToken = jwt.sign({ userId }, configs.JWT_REFRESH_KEY, {
+    expiresIn: "365d",
+  });
 
-  const userToken = await tokenDaos.checkUserToken({ userId: user?._id });
+  const userToken = await tokenDaos.checkUserToken({ userId });
   if (userToken) {
     await tokenDaos.deleteToken(userToken?._id);
   }
   const hashToken = hashData(refreshToken);
-  await tokenDaos.addToken({ userId: user?._id, token: hashToken });
+  await tokenDaos.addToken({ userId, token: hashToken });
   return refreshToken;
 };
 

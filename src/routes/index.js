@@ -6,6 +6,7 @@ const rateController = require("../controllers/rate");
 const adminController = require("../controllers/admin");
 const userController = require("../controllers/user");
 const authController = require("../controllers/auth");
+const { checkToken } = require("../middleware");
 
 const router = express.Router();
 
@@ -48,7 +49,7 @@ router.post("/api/login", userController.loginController);
 router.put("/api/change-pass", userController.changePasswordController);
 
 // message
-router.post("/api/send-msg", messageController.sendMessage);
+router.post("/api/send-msg", checkToken, messageController.sendMessage);
 router.get("/api/get-msg/:id", messageController.getListMessage);
 
 // rate

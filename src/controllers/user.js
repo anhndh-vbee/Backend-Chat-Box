@@ -14,14 +14,14 @@ const loginController = async (req, res) => {
     if (result && result.errMsg) {
       return res.status(401).json(result);
     }
-    const { refreshToken, ...otherFields } = result;
+    const { refreshToken, accessToken } = result;
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
       path: "/",
       sameSite: "strict",
     });
-    return res.status(200).json(otherFields);
+    return res.status(200).json({ accessToken });
   } catch (error) {
     return res.status(500).json(error.message);
   }
