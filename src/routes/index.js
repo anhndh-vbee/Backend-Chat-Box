@@ -5,6 +5,7 @@ const messageController = require("../controllers/message");
 const rateController = require("../controllers/rate");
 const adminController = require("../controllers/admin");
 const userController = require("../controllers/user");
+const authController = require("../controllers/auth");
 
 const router = express.Router();
 
@@ -30,6 +31,9 @@ const fileFilter = function (req, file, cb) {
 };
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+// auth
+router.post("/api/refresh-token", authController.refreshTokenController);
 
 // admin
 router.post(

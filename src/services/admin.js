@@ -31,6 +31,10 @@ const addUserService = async (data) => {
 const bulkAddUserService = async (data) => {
   const userList = await Promise.all(
     data.map(async (user) => {
+      const checkUser = await userDaos.findUser({ email: user["Email"] });
+      if (checkUser) {
+        return null;
+      }
       const password = generateRandomString(8);
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, salt);
@@ -47,8 +51,34 @@ const bulkAddUserService = async (data) => {
     })
   );
 
-  const result = await userDaos.bulkInsertUser(userList);
+  const userListNotExisted = userList.filter((user) => user !== null);
+
+  const result = await userDaos.bulkInsertUser(userListNotExisted);
   return result;
 };
 
-module.exports = { addUserService, bulkAddUserService };
+const updatePasswordForUserService = async (data) => {
+  const { email } = data;
+  const user = await userDaos.findUser({ email });
+  if (user) {
+    const password = configs.NEW_PASS;
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+    await userDaos.updateUser({ email }, { password: hashPassword });
+    return {
+      msg: "Update successfully",
+    };
+  }
+
+  return {
+    errMsg: "Not found user",
+  };
+};
+
+const getListPasswordForUser = async (data) => {};
+
+module.exports = {
+  addUserService,
+  bulkAddUserService,
+  updatePasswordForUserService,
+};

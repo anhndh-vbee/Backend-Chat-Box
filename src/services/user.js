@@ -1,5 +1,6 @@
 const userDaos = require("../daos/user");
 const bcrypt = require("bcrypt");
+const { generateAccessToken, generateRefreshToken } = require("./auth");
 
 const getUserService = async (email) => {
   const user = await userDaos.findUser({ email });
@@ -18,7 +19,9 @@ const loginService = async (data) => {
     const checkPassword = await bcrypt.compare(password, user?.password);
     if (checkPassword) {
       const { password, rawPass, ...otherFields } = user._doc;
-      return otherFields;
+      const accessToken = generateAccessToken(otherFields);
+      const refreshToken = await generateRefreshToken(otherFields);
+      return { ...otherFields, refreshToken, accessToken };
     }
     return {
       errMsg: "Wrong password",

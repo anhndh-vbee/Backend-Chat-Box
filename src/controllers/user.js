@@ -12,9 +12,16 @@ const loginController = async (req, res) => {
 
     const result = await userService.loginService(req.body);
     if (result && result.errMsg) {
-      return res.status(400).json(result);
+      return res.status(401).json(result);
     }
-    return res.status(200).json(result);
+    const { refreshToken, ...otherFields } = result;
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      path: "/",
+      sameSite: "strict",
+    });
+    return res.status(200).json(otherFields);
   } catch (error) {
     return res.status(500).json(error.message);
   }
@@ -28,7 +35,7 @@ const changePasswordController = async (req, res) => {
     }
     const result = await userService.changePasswordService(req.body);
     if (result && result.errMsg) {
-      return res.status(400).json(result);
+      return res.status(401).json(result);
     }
 
     return res.status(200).json(result);
