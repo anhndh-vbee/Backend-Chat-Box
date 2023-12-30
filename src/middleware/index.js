@@ -1,40 +1,43 @@
 const jwt = require("jsonwebtoken");
 const configs = require("../configs/index");
+const userService = require("../services/user");
 
-const checkToken = (req, res, next) => {
+const checkToken = async (req, res, next) => {
   const token = req.headers.token;
   if (token) {
     const accessToken = token.split(" ")[1];
-    jwt.verify(accessToken, configs.JWT_ACCESS_KEY, (err, user) => {
+    jwt.verify(accessToken, configs.JWT_ACCESS_KEY, async (err, data) => {
       if (err) {
-        console.log(err);
-        return res.status(403).json("Token is invalid");
+        return res.status(403).json({ errMsg: "Token is invalid" });
       }
-      console.log(user);
-      req.user = user.data;
+      const result = await userService.getUserById(data?.userId);
+      if (result.errMsg) {
+        return res.status(403).json({ errMsg: "User not found" });
+      }
+      req.user = result;
       next();
     });
   } else {
-    return res.status(401).json("Not authenticated");
+    return res.status(401).json({ errMsg: "Not authenticated" });
   }
 };
 
 const checkAuthAdmin = (req, res, next) => {
   checkToken(req, res, () => {
-    if (req.user.data.role === configs.ROLE.ADMIN) {
+    if (req.user.role === configs.ROLE.ADMIN) {
       next();
     } else {
-      return res.status(403).json("Access denied. Not authorized.");
+      return res.status(403).json({ errMsg: "Access denied. Not authorized." });
     }
   });
 };
 
 const checkAuthTeacher = (req, res, next) => {
   checkToken(req, res, () => {
-    if (req.user.data.role === configs.ROLE.TEACHER) {
+    if (req.user.role === configs.ROLE.TEACHER) {
       next();
     } else {
-      return res.status(403).json("Access denied. Not authorized.");
+      return res.status(403).json({ errMsg: "Access denied. Not authorized." });
     }
   });
 };

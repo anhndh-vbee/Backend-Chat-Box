@@ -30,12 +30,11 @@ const refreshTokenService = async (token) => {
     };
   }
   return new Promise((resolve, reject) => {
-    jwt.verify(token, configs.JWT_REFRESH_KEY, (err, user) => {
+    jwt.verify(token, configs.JWT_REFRESH_KEY, (err, data) => {
       if (err) {
         reject({ errMsg: "Invalid token" });
       } else {
-        const payload = user?.data;
-        const newAccessToken = generateAccessToken(payload);
+        const newAccessToken = generateAccessToken(data.userId);
         resolve({
           accessToken: newAccessToken,
         });

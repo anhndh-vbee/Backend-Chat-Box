@@ -1,12 +1,12 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const { checkToken, checkAuthAdmin } = require("../middleware");
 const messageController = require("../controllers/message");
 const rateController = require("../controllers/rate");
 const adminController = require("../controllers/admin");
 const userController = require("../controllers/user");
 const authController = require("../controllers/auth");
-const { checkToken } = require("../middleware");
 
 const router = express.Router();
 
@@ -39,10 +39,11 @@ router.post("/api/refresh-token", authController.refreshTokenController);
 // admin
 router.post(
   "/api/upload-user",
+  checkAuthAdmin,
   upload.single("file"),
   adminController.uploadUserController
 );
-router.post("/api/add-user", adminController.addUserController);
+router.post("/api/add-user", checkAuthAdmin, adminController.addUserController);
 
 // user
 router.post("/api/login", userController.loginController);
@@ -50,9 +51,9 @@ router.put("/api/change-pass", userController.changePasswordController);
 
 // message
 router.post("/api/send-msg", checkToken, messageController.sendMessage);
-router.get("/api/get-msg/:id", messageController.getListMessage);
+router.get("/api/get-msg/:id", checkToken, messageController.getListMessage);
 
 // rate
-router.post("/api/send-rate", rateController.sendRate);
+router.post("/api/send-rate", checkToken, rateController.sendRate);
 
 module.exports = router;

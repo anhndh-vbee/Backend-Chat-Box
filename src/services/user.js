@@ -12,6 +12,17 @@ const getUserService = async (email) => {
   return user;
 };
 
+const getUserById = async (id) => {
+  const user = await userDaos.findUser({ _id: id });
+  if (!user) {
+    return {
+      errMsg: "User not found",
+    };
+  }
+  const { password, rawPass, ...otherFields } = user._doc;
+  return otherFields;
+};
+
 const loginService = async (data) => {
   const { email, password } = data;
   const user = await userDaos.findUser({ email });
@@ -67,4 +78,9 @@ const changePasswordService = async (data) => {
   };
 };
 
-module.exports = { getUserService, loginService, changePasswordService };
+module.exports = {
+  getUserService,
+  loginService,
+  changePasswordService,
+  getUserById,
+};
