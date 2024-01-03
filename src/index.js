@@ -8,7 +8,12 @@ const app = express();
 const socketIO = require("socket.io");
 const port = configs.PORT || 8089;
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:8080",
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

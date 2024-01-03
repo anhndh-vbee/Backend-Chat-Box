@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const configs = require("../configs/index");
 const tokenDaos = require("../daos/token");
+const userDaos = require("../daos/user");
 const hashData = require("../utils/hash");
 
 const generateAccessToken = (userId) => {
@@ -43,8 +44,16 @@ const refreshTokenService = async (token) => {
   });
 };
 
+const verifyToken = async (token) => {
+  const data = jwt.verify(token, configs.JWT_ACCESS_KEY);
+  const { userId } = data;
+  const user = await userDaos.findUser({ _id: userId });
+  return user;
+};
+
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
   refreshTokenService,
+  verifyToken,
 };

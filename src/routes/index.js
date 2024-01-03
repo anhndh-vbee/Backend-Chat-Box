@@ -35,6 +35,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // auth
 router.post("/api/refresh-token", authController.refreshTokenController);
+router.get("/api/verify", checkToken, authController.verifyController);
 
 // admin
 router.post(

@@ -12,9 +12,12 @@ const checkToken = async (req, res, next) => {
       }
       const result = await userService.getUserById(data?.userId);
       if (result.errMsg) {
-        return res.status(403).json({ errMsg: "User not found" });
+        return res.status(404).json({ errMsg: "User not found" });
       }
       req.user = result;
+      if (["/api/logout", "/api/verify"].includes(req.path)) {
+        req.accessToken = accessToken;
+      }
       next();
     });
   } else {

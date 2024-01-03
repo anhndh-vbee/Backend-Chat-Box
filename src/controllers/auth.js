@@ -18,4 +18,14 @@ const refreshTokenController = async (req, res) => {
   }
 };
 
-module.exports = { refreshTokenController };
+const verifyController = async (req, res) => {
+  try {
+    const { accessToken } = req;
+    const result = await authService.verifyToken(accessToken);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
+module.exports = { refreshTokenController, verifyController };

@@ -21,6 +21,7 @@ const loginController = async (req, res) => {
       path: "/",
       sameSite: "strict",
     });
+    console.log({ accessToken });
     return res.status(200).json({ accessToken });
   } catch (error) {
     return res.status(500).json(error.message);
